@@ -25,17 +25,14 @@ class Page
   include Capybara::DSL
 
   def initialize
-    Capybara.default_driver = :selenium
+    Capybara.current_driver = :selenium
     # Capybara.javascript_driver = :webkit
   end
 
   def enter_keyword(keyword, im_feeling_lucky=false)
     visit 'https://google.com'
     fill_in 'q', with: keyword
-    # elt.send_keys keyword, :enter
     locator = im_feeling_lucky ? '.sbsb_i.sbqs_b' : '.lsb'
-    find('.sbsb_c.gsfs', match: :first).hover
-    # driver.browser.action.move_to(elt.native).perform
     find(locator, match: :first).click
   end
 
