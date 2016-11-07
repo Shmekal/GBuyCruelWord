@@ -1,5 +1,6 @@
 require 'capybara'
 require 'capybara/dsl'
+require 'uri'
 
 
 Capybara::Selenium::Driver.class_eval do
@@ -15,7 +16,7 @@ end
 
 def process_ARGV(keyword)
   if keyword.empty?
-    puts 'Please pass the keyword next to the test filename'
+    fail 'Please pass the keyword next to the test filename'
   else
     keyword = keyword.join(' ')
   end
@@ -37,12 +38,16 @@ class Page
   end
 
   def verify_basic_search_results(keyword, params={})
+    result_elt = '.g'
+
     # first result
     puts 'First result:'
     if params[:force_inclusion]
-      check_force_inclusion('.g', keyword)
+      check_force_inclusion(result_elt, keyword)
     else
-      check_keyword_presence('.g', keyword)
+      # clean the query of site: param in case it is set
+      query = params[:site] ? keyword.scan(/(.*)site:.*\.*/)[0][0] : keyword
+      check_keyword_presence(result_elt, query)
     end
 
     # page title
@@ -54,14 +59,18 @@ class Page
     end
 
     # page url
-    match_url = /#q=(.*)/.match(current_url)
-    match_url = make_gsubs(match_url[1])
+    match_url = /#q=(.*)/.match(current_url)[1].gsub('+', ' ')
+    match_url = URI.unescape(match_url)
     puts 'URL:'
     if match_url == keyword
       puts "'#{keyword}' keyword is present"
     else
       puts "Mismatch! \n-expected: #{keyword}\n-found: #{match_url}"
     end
+
+    # specified site
+    verify_specified_site(keyword) if params[:site]
+
   end
 
 
@@ -94,9 +103,15 @@ class Page
     end
   end # check_force_inclusion
 
-  def make_gsubs(string)
-    gsub_pairs = [['+',' '], ['%2B','+'], ['%27','\''], ['%22','"']]
-    gsub_pairs.each{ |pair| string.gsub!(pair.first, pair.last) }
-    string
+  def verify_specified_site(keyword)
+    puts 'Site:'
+    site = keyword.scan(/site:(.*\.*)/)[0][0].downcase
+    if all('._Rm').all? { |elt| elt.text.include?(site) }
+      puts "all results are from #{site}"
+    else
+      # particular results/sites can be outputted
+      puts 'not all results are from the same site'
+    end
   end
+
 end
