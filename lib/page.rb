@@ -18,10 +18,10 @@ class Page
 
   def initialize
     Capybara.current_driver = :selenium
-    # Capybara.javascript_driver = :webkit
   end
 
   def enter_keyword(keyword, params={})
+    # also can be executed here or in the initialize method
     # visit 'https://google.com'
     fill_in 'q', with: keyword
     locator = params[:im_feeling_lucky] ? '.sbsb_i.sbqs_b' : '.lsb'
@@ -30,6 +30,14 @@ class Page
 
   def parse_first_result
     find('.g', match: :first).text.downcase
+  end
+
+  def parse_all_sites
+    within('.srg') do
+      site_list = []
+      all('._Rm').each { |i| site_list << i.text }
+      site_list
+    end
   end
 
 end
