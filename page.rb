@@ -2,7 +2,7 @@ require 'capybara'
 require 'capybara/dsl'
 require 'uri'
 
-
+# workaround to keep browser alive for debugging after test completion
 Capybara::Selenium::Driver.class_eval do
   def quit
     puts "Press RETURN to quit the browser"
@@ -97,21 +97,23 @@ class Page
     if phrases.all? { |phrase| object.include?(phrase)}
       puts "all force inclusion phrases are present - #{phrases}"
     else
-      # here we change the logic to a bit to output
+      # here we the logic can be changed to output
       # more precisely what phrases were/weren't found
       puts "not all phrases were found"
     end
-  end # check_force_inclusion
+  end # def check_force_inclusion
 
   def verify_specified_site(keyword)
     puts 'Site:'
     site = keyword.scan(/site:(.*\.*)/)[0][0].downcase
-    if all('._Rm').all? { |elt| elt.text.include?(site) }
-      puts "all results are from #{site}"
-    else
-      # particular results/sites can be outputted
-      puts 'not all results are from the same site'
-    end
-  end
+    within('.srg') do
+      if all('._Rm').all? { |elt| elt.text.include?(site) }
+        puts "all results are from #{site}"
+      else
+        # particular results/sites can be outputted
+        puts 'not all results are from the same site'
+      end # if
+    end # within
+  end # def verify)specified_site
 
 end
