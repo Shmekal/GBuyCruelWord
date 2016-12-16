@@ -55,7 +55,7 @@ class Page
         when :title
           '.r'
         when :url
-          '.f'
+          '.f.kv'
         when :description
           '.st'
       end
