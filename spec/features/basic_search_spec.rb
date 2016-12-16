@@ -12,11 +12,8 @@ RSpec.feature "Verify query search results" do
   end
 
   feature "Use one-word keyword" do
-
     context "Ignore case" do
-
       context "Downcase input" do
-
         given(:keyword) {'monster'}
 
         scenario "Title contains inputted keyword Upcase" do
@@ -30,12 +27,10 @@ RSpec.feature "Verify query search results" do
         scenario "Description contains inputted keyword Upcase" do
           expect(subject.first_result_description).to include(keyword.capitalize)
         end
-
       end # context downcase
 
 
       context "Upcase input" do
-
         given(:keyword) {'Monster'}
 
         scenario "Title contains inputted keyword Upcase" do
@@ -49,12 +44,9 @@ RSpec.feature "Verify query search results" do
         scenario "Description contains inputted keyword Upcase" do
           expect(subject.first_result_description).to include(keyword.capitalize)
         end
-
       end # context upcase
 
-
       context "Mixed case input" do
-
         given(:keyword) {'mONSteR'}
 
         scenario "Title contains inputted keyword Upcase" do
@@ -68,14 +60,11 @@ RSpec.feature "Verify query search results" do
         scenario "Description contains inputted keyword Upcase" do
           expect(subject.first_result_description).to include(keyword.capitalize)
         end
-
       end # context mixed
-
     end # context ignore
 
 
     context "cyryllic symbols" do
-
       given(:keyword) {'Монстр'}
 
       scenario "Title contains inputted cyryllic keyword" do
@@ -85,14 +74,11 @@ RSpec.feature "Verify query search results" do
       scenario "Description contains inputted cyryllic keyword" do
         expect(subject.first_result_description).to include(keyword.capitalize)
       end
-
     end
-
   end # feature one-word
 
 
   feature "Use multi-word keyword" do
-
     given(:keyword) {'Buy Car Online'}
 
     before { subject.enter_keyword 'Buy Car Online' }
@@ -104,7 +90,5 @@ RSpec.feature "Verify query search results" do
     scenario "Description contains inputted keyword" do
       expect(subject.first_result_description).to include('buy', 'car', 'online')
     end
-
   end
-
 end # feature verify search
