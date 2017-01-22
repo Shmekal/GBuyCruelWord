@@ -4,11 +4,14 @@ require 'page'
 
 RSpec.feature "Verify query search results" do
 
-  subject { Page.new }
-
   background do
-    subject.visit 'https://google.com'
-    subject.enter_keyword keyword
+    @page = Home.new
+    @page.navigate_to_home_page
+    @page.wait_for_search_field(3)
+    @page.search_field.text_input.set keyword
+    @page.search_field.search_button.click
+    @page = SearchResults.new
+    @page.wait_for_search_results(3)
   end
 
   feature "Use one-word keyword" do
@@ -17,15 +20,15 @@ RSpec.feature "Verify query search results" do
         given(:keyword) {'monster'}
 
         scenario "Title contains inputted keyword Upcase" do
-          expect(subject.first_result_title).to include(keyword.capitalize)
+          expect(@page.first_result_title).to include(keyword.capitalize)
         end
 
         scenario "URL contains inputted keyword Downcase" do
-          expect(subject.first_result_url).to include(keyword.downcase)
+          expect(@page.first_result_url).to include(keyword.downcase)
         end
 
         scenario "Description contains inputted keyword Upcase" do
-          expect(subject.first_result_description).to include(keyword.capitalize)
+          expect(@page.first_result_description).to include(keyword.capitalize)
         end
       end # context downcase
 
@@ -34,15 +37,15 @@ RSpec.feature "Verify query search results" do
         given(:keyword) {'Monster'}
 
         scenario "Title contains inputted keyword Upcase" do
-          expect(subject.first_result_title).to include(keyword.capitalize)
+          expect(@page.first_result_title).to include(keyword.capitalize)
         end
 
         scenario "URL contains inputted keyword Downcase" do
-          expect(subject.first_result_url).to include(keyword.downcase)
+          expect(@page.first_result_url).to include(keyword.downcase)
         end
 
         scenario "Description contains inputted keyword Upcase" do
-          expect(subject.first_result_description).to include(keyword.capitalize)
+          expect(@page.first_result_description).to include(keyword.capitalize)
         end
       end # context upcase
 
@@ -50,29 +53,29 @@ RSpec.feature "Verify query search results" do
         given(:keyword) {'mONSteR'}
 
         scenario "Title contains inputted keyword Upcase" do
-          expect(subject.first_result_title).to include(keyword.capitalize)
+          expect(@page.first_result_title).to include(keyword.capitalize)
         end
 
         scenario "URL contains inputted keyword Downcase" do
-          expect(subject.first_result_url).to include(keyword.downcase)
+          expect(@page.first_result_url).to include(keyword.downcase)
         end
 
         scenario "Description contains inputted keyword Upcase" do
-          expect(subject.first_result_description).to include(keyword.capitalize)
+          expect(@page.first_result_description).to include(keyword.capitalize)
         end
       end # context mixed
     end # context ignore
 
 
     context "cyryllic symbols" do
-      given(:keyword) {'Монстр'}
+      given(:keyword) {'Колобок'}
 
       scenario "Title contains inputted cyryllic keyword" do
-        expect(subject.first_result_title).to include(keyword.capitalize)
+        expect(@page.first_result_title).to include(keyword.capitalize)
       end
 
       scenario "Description contains inputted cyryllic keyword" do
-        expect(subject.first_result_description).to include(keyword.capitalize)
+        expect(@page.first_result_description).to include(keyword.capitalize)
       end
     end
   end # feature one-word
@@ -81,14 +84,12 @@ RSpec.feature "Verify query search results" do
   feature "Use multi-word keyword" do
     given(:keyword) {'Buy Car Online'}
 
-    before { subject.enter_keyword 'Buy Car Online' }
-
     scenario "Title contains inputted keyword" do
-      expect(subject.first_result_title).to include('Buy', 'Car', 'Online')
+      expect(@page.first_result_title).to include('Buy', 'Car', 'Online')
     end
 
     scenario "Description contains inputted keyword" do
-      expect(subject.first_result_description).to include('buy', 'car', 'online')
+      expect(@page.first_result_description).to include('buy', 'car', 'online')
     end
   end
 end # feature verify search

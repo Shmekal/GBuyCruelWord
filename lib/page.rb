@@ -2,6 +2,7 @@ require 'capybara'
 require 'capybara/dsl'
 require 'capybara/rspec'
 require 'uri'
+require 'site_prism'
 
 # # workaround to keep browser alive for debugging after test completion
 # Capybara::Selenium::Driver.class_eval do
@@ -14,55 +15,48 @@ require 'uri'
 #   end
 # end
 
-class Page
+class SearchFieldSection < SitePrism::Section
+  element :text_input, '#lst-ib'
+  element :voice_input, '.gsri_a'
+  element :search_button, '.sbico'
+end
+
+class SearchResultSection < SitePrism::Section
+  element :title, '.r'
+  element :url, '.f.kv'
+  element :description, '.st'
+end
+
+class Page < SitePrism::Page
   include Capybara::DSL
 
   def initialize
     Capybara.current_driver = :selenium
   end
 
-  def enter_keyword(keyword)
-    fill_in 'q', with: keyword
-    # locator = params[:im_feeling_lucky] ? '.sbsb_i.sbqs_b' : '.lsb'
-    find('.sbico', match: :first).click
+  def navigate_to_home_page
+    self.load
   end
+end
 
-  def parse_all_sites
-    within('.srg') do
-      site_list = []
-      all('._Rm').each { |i| site_list << i.text }
-      site_list
-    end
-  end
+class Home < Page
+  set_url 'https://www.google.com'
+  section :search_field, SearchFieldSection, '.sbibod'
+end
+
+class SearchResults < Page
+  section :search_field, SearchFieldSection, '.sbibod'
+  sections :search_results, SearchResultSection, '.rc'
 
   def first_result_title
-    parse_first_result(:title)
+    search_results.first.title.text
   end
 
   def first_result_url
-    parse_first_result(:url)
+    search_results.first.url.text
   end
 
   def first_result_description
-    parse_first_result(:description)
+    search_results.first.description.text
   end
-
-  private
-
-  def parse_first_result(destination)
-    locator =
-      case destination
-        when :title
-          '.r'
-        when :url
-          '.f.kv'
-        when :description
-          '.st'
-      end
-
-    within(find('.rc', match: :first)) do
-      find(locator).text
-    end
-  end
-
 end
