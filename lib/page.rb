@@ -39,10 +39,6 @@ class Home < Page
   set_url 'https://www.google.com'
   section :search_field, SearchFieldSection, '.sbibod'
 
-  # def initialize
-  #   navigate_to_home_page
-  # end
-
   def navigate_to_home_page
     self.load
   end

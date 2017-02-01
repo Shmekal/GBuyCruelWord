@@ -2,7 +2,7 @@
 
 require 'page'
 
-RSpec.feature "Verify query search results" do
+feature "Verify query search results" do
 
   background do
     @page = Home.new
