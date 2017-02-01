@@ -33,20 +33,38 @@ class Page < SitePrism::Page
   def initialize
     Capybara.current_driver = :selenium
   end
-
-  def navigate_to_home_page
-    self.load
-  end
 end
 
 class Home < Page
   set_url 'https://www.google.com'
   section :search_field, SearchFieldSection, '.sbibod'
+
+  # def initialize
+  #   navigate_to_home_page
+  # end
+
+  def navigate_to_home_page
+    self.load
+  end
+
+  def fill_search_field_with(keyword)
+    wait_for_search_field(3)
+    search_field.text_input.set keyword
+    search_field.search_button.click
+  end
+
+  def navigate_and_parse_search_page
+    SearchResults.new
+  end
 end
 
 class SearchResults < Page
   section :search_field, SearchFieldSection, '.sbibod'
   sections :search_results, SearchResultSection, '.rc'
+
+  def initialize
+    wait_for_search_results(3)
+  end
 
   def first_result_title
     search_results.first.title.text

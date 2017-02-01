@@ -7,11 +7,8 @@ RSpec.feature "Verify query search results" do
   background do
     @page = Home.new
     @page.navigate_to_home_page
-    @page.wait_for_search_field(3)
-    @page.search_field.text_input.set keyword
-    @page.search_field.search_button.click
-    @page = SearchResults.new
-    @page.wait_for_search_results(3)
+    @page.fill_search_field_with keyword
+    @page = @page.navigate_and_parse_search_page
   end
 
   feature "Use one-word keyword" do
@@ -31,7 +28,6 @@ RSpec.feature "Verify query search results" do
           expect(@page.first_result_description).to include(keyword.capitalize)
         end
       end # context downcase
-
 
       context "Upcase input" do
         given(:keyword) {'Monster'}
@@ -66,7 +62,6 @@ RSpec.feature "Verify query search results" do
       end # context mixed
     end # context ignore
 
-
     context "cyryllic symbols" do
       given(:keyword) {'Колобок'}
 
@@ -79,7 +74,6 @@ RSpec.feature "Verify query search results" do
       end
     end
   end # feature one-word
-
 
   feature "Use multi-word keyword" do
     given(:keyword) {'Buy Car Online'}
