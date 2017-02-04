@@ -1,6 +1,7 @@
 require 'capybara'
 require 'capybara/dsl'
 require 'capybara/rspec'
+require 'capybara-webkit'
 require 'uri'
 require 'site_prism'
 
@@ -19,6 +20,11 @@ class SearchFieldSection < SitePrism::Section
   element :text_input, '#lst-ib'
   element :voice_input, '.gsri_a'
   element :search_button, '.sbico'
+end
+
+class SearchSuggestionsSection < SitePrism::Section
+  elements :suggestions, '.sbsb_b [role=option]'
+  element :im_feeling_lucky, '.sbsb_i.sbqs_b'
 end
 
 class SearchResultSection < SitePrism::Section
@@ -49,14 +55,20 @@ class Home < Page
     search_field.search_button.click
   end
 
+  def fill_search_im_feeling_lucky(keyword)
+    wait_for_search_field(3)
+    search_field.text_input.set keyword
+  end
+
   def navigate_and_parse_search_page
     SearchResults.new
   end
 end
 
 class SearchResults < Page
-  section :search_field, SearchFieldSection, '.sbibod'
+  section :search_field, SearchFieldSection, '.sbtc'
   sections :search_results, SearchResultSection, '.rc'
+  section :search_suggestions, SearchSuggestionsSection, '.gstl_0.sbdd_a'
 
   def initialize
     wait_for_search_results(3)
@@ -72,5 +84,11 @@ class SearchResults < Page
 
   def first_result_description
     search_results.first.description.text
+  end
+
+  def submit_im_feeling_lucky_search
+    wait_for_search_suggestions(3)
+    search_suggestions.suggestions.first.trigger(:mouseover)
+    search_suggestions.im_feeling_lucky.click
   end
 end

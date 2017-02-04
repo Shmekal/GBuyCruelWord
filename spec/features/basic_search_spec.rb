@@ -8,6 +8,7 @@ feature "Verify query search results" do
     @page = Home.new
     @page.navigate_to_home_page
     @page.fill_search_field_with keyword
+    @page.press_search_button
     @page = @page.navigate_and_parse_search_page
   end
 
