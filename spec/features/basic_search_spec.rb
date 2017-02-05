@@ -1,8 +1,8 @@
-# spec/register_down_spec.rb
+# spec/features/register_down_spec.rb
 
 require 'page'
 
-feature "Verify query search results" do
+feature "Verify basic query search results" do
 
   background do
     @page = Home.new

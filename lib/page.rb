@@ -3,6 +3,7 @@ require 'capybara/dsl'
 require 'capybara/rspec'
 require 'uri'
 require 'site_prism'
+require 'additional_methods.rb'
 
 # # workaround to keep browser alive for debugging after test completion
 # Capybara::Selenium::Driver.class_eval do
@@ -67,10 +68,25 @@ class SearchResults < Page
   end
 
   def first_result_url
-    search_results.first.url.text
+    result = search_results.first.url.text
+    symbols_to_replace = ['_', '-']
+    symbols_to_replace.each { |s| result.gsub!(s, ' ') }
+    result
   end
 
   def first_result_description
     search_results.first.description.text
+  end
+
+  def all_titles
+    search_results.map { |result| result.title.text.downcase }
+  end
+
+  def all_urls
+    search_results.map { |result| result.url.text }
+  end
+
+  def all_descriptions
+    search_results.map { |result| result.description.text.downcase }
   end
 end
